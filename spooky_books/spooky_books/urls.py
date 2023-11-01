@@ -18,8 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    # Home Page
     path("", include("information.urls")),
+    # Internal FullStack Book Catalogue System
     path("books/", include("catalogue.urls")),
+    # Django Rest Framework API
     path("api/", include("api.urls")),
     path("admin/", admin.site.urls),
 ]

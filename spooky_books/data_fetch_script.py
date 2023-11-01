@@ -3,11 +3,12 @@ import json
 import hashlib
 
 
+# Generate isbn for books that dont have one
 def generate_pseudo_isbn(title, author):
     raw_id = f"{title}-{author}".encode("utf-8")
     pseudo_isbn = hashlib.sha1(raw_id).hexdigest()[
         :13
-    ]  # taking only the first 13 characters for brevity
+    ]  # taking only the first 13 characters
     return f"845-{pseudo_isbn}"
 
 
@@ -18,8 +19,9 @@ def fetch_horror_books():
     # Parameters for the API request
     params = {
         "q": "subject:horror",  # search for only horror books
-        "maxResults": 40,
+        "maxResults": 40,  # I only want max 40 books
         "printType": "books",
+        # Select title, authors, pulishedDate, isbn, image
         "fields": "items(volumeInfo/title,volumeInfo/authors,volumeInfo/publishedDate,volumeInfo/industryIdentifiers,volumeInfo/imageLinks/thumbnail)",
     }
 
@@ -33,22 +35,24 @@ def fetch_horror_books():
     return None
 
 
+# Get Horror book data from Google Books API
 book_data = fetch_horror_books()
 
 
-# Transforming Horror Book data to fit my models
+# Separating author and book data
+# and transforming data to fit my models
 def transform_to_json(book_data):
     transformed_data = []
 
     if book_data:
-        authors_index = {}
+        authors_index = {}  # As each author is processed we will add author_name: id
         current_author_id = 1
         current_book_id = 1
 
         for item in book_data["items"]:
             info = item["volumeInfo"]
 
-            # Process authors
+            # Process authors - split name to first and last name
             if "authors" in info:
                 for author_name in info["authors"]:
                     if author_name not in authors_index:
@@ -106,9 +110,8 @@ def transform_to_json(book_data):
 # Transform the fetched data
 transformed_json_data = transform_to_json(book_data)
 
+
 # Save JSON Horror Books data to JSON file.
-
-
 def save_to_json(data, file_path="./seeds.json"):
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)

@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
+# Hide Sensitive Data - DB and Debug
+import environ
+
+env = environ.Env()
+environ.Env.read_env()  # Read the .env file
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,13 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-t(2h6)mt+$#sb_(x$+p!@zg9*ronus0x!cbg599)+mc_2p*lu3"
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
+# Allow Cross Origin Resource Sharing with my React app
+# Also required corsheaders in INSTALLED_APP and CORS headers middleware
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000"]
 
 
@@ -40,20 +48,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "corsheaders",
-    "rest_framework",
-    "catalogue",
-    "information",
-    "api",
-    "django_filters",
-    "rest_framework_swagger",
-    "drf_yasg",
+    "corsheaders",  # For CORS
+    "rest_framework",  # API
+    "catalogue",  # Book Catalogue System
+    "information",  # Home Page
+    "api",  # App to separate DRF API from Catalogue
+    "django_filters",  # Easier Filtering
+    "rest_framework_swagger",  # AI to generate DRF API Documentation
+    "drf_yasg",  # Creates UI for AI to generate DRF API Documentation
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",  # CORS
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -89,16 +97,7 @@ WSGI_APPLICATION = "spooky_books.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "spooky_books",
-        "USER": "codeclanstudent",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
-}
+DATABASES = {"default": env.db("DATABASE_URL")}
 
 
 # Password validation

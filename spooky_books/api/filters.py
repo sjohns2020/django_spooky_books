@@ -3,8 +3,9 @@ from catalogue.models import Book
 from django.db.models import Q
 
 
+# Filter to handle filtering book by Title, isbn or author name
 class BookFilter(django_filters.FilterSet):
-    # Custom filters
+    # Simple Custom filters
     title = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
     ISBN = django_filters.CharFilter(field_name="ISBN", lookup_expr="icontains")
 
@@ -14,10 +15,9 @@ class BookFilter(django_filters.FilterSet):
         model = Book
         fields = []
 
-    # This function will perform the 'author' filtering.
-
+    # More complex Author Fullname filter function
     def filter_by_author_full_name(self, queryset, name, value):
-        # Splitting by spaces, assuming that first and last names are separated by spaces
+        # Incase name is multiple words
         names = value.split()
 
         # We create queries for each word, assuming it could be either first or last name.
